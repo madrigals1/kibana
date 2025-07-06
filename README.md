@@ -16,15 +16,20 @@ This project provides a Docker-based setup for running Kibana with Elasticsearch
    ```
    Edit `.env` to customize ports and other settings if needed.
 
-2. **Start the services:**
+2. **Create the external network:**
+   ```bash
+   docker network create https_network
+   ```
+
+3. **Start the services:**
    ```bash
    docker-compose up -d
    ```
 
-3. **Access Kibana:**
+4. **Access Kibana:**
    Open your browser and go to `http://localhost:5601` (or the port configured in KIBANA_PORT)
 
-4. **Access Elasticsearch:**
+5. **Access Elasticsearch:**
    Elasticsearch is available at `http://localhost:9200` (or the port configured in ELASTICSEARCH_PORT)
 
 ## Services
@@ -33,11 +38,15 @@ This project provides a Docker-based setup for running Kibana with Elasticsearch
 - **Port:** 9200 (HTTP), 9300 (Transport)
 - **Container:** elasticsearch
 - **Data:** Persisted in Docker volume `elasticsearch_data`
+- **Network:** Internal `elastic` network only (secure)
 
 ### Kibana
 - **Port:** 5601
 - **Container:** kibana
 - **Dependencies:** Waits for Elasticsearch to be healthy before starting
+- **Networks:** 
+  - Internal `elastic` network (to communicate with Elasticsearch)
+  - External `https_network` network (for reverse proxy access)
 
 ## Configuration
 
@@ -57,6 +66,8 @@ Available settings:
 - **ELASTICSEARCH_VERSION**: Elasticsearch Docker image version (default: 8.11.0)
 - **KIBANA_VERSION**: Kibana Docker image version (default: 8.11.0)
 - **XPACK_SECURITY_ENABLED**: Enable/disable security features (default: false)
+- **ELASTIC_NETWORK_NAME**: Internal network name for Elasticsearch-Kibana communication (default: elastic)
+- **HTTPS_NETWORK**: External network name for reverse proxy access (default: https_network)
 
 To change the external ports, edit the `.env` file:
 ```bash
@@ -72,9 +83,36 @@ ELASTICSEARCH_PORT=9300
 - **Kibana config:** `kibana.yml` - Basic configuration with security disabled for development
 - **Elasticsearch:** Single-node cluster with security disabled
 
+## Network Architecture
+
+This setup uses a dual-network architecture for security:
+
+- **Internal Network (`elastic`)**: Used for Elasticsearch-Kibana communication only
+- **External Network (`https_network`)**: Allows reverse proxy access to Kibana
+
+### Using with Reverse Proxy
+
+To connect Kibana to a reverse proxy (like Nginx, Traefik, or Apache):
+
+1. Create the external network:
+   ```bash
+   docker network create https_network
+   ```
+
+2. Connect your reverse proxy to the same network:
+   ```bash
+   # Example for Nginx
+   docker run --network https_network nginx
+   ```
+
+3. Configure your reverse proxy to connect to `kibana:5601` (container name and internal port)
+
 ## Commands
 
 ```bash
+# Create external network (run once)
+docker network create https_network
+
 # Start services
 docker-compose up -d
 
@@ -95,6 +133,9 @@ docker-compose ps
 
 # Restart services after changing .env file
 docker-compose down && docker-compose up -d
+
+# Remove external network (when no longer needed)
+docker network rm https_network
 ```
 
 ## Health Checks

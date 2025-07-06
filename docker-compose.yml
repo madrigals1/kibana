@@ -35,6 +35,7 @@ services:
         condition: service_healthy
     networks:
       - elastic
+      - https_network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:5601 || exit 1"]
       interval: 30s
@@ -47,4 +48,7 @@ volumes:
 
 networks:
   elastic:
-    driver: bridge 
+    driver: bridge
+  https_network:
+    external: true
+    name: ${HTTPS_NETWORK} 
