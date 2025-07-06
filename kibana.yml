@@ -1,0 +1,15 @@
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+monitoring.ui.container.elasticsearch.enabled: true
+
+# Disable security for development
+xpack.security.enabled: false
+xpack.encryptedSavedObjects.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
+xpack.reporting.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
+xpack.security.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
+
+# Logging
+logging.appenders.console.type: console
+logging.appenders.console.layout.type: json
+logging.root.level: info 
