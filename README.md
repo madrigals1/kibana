@@ -1,6 +1,6 @@
-# Kibana Docker Setup
+# ELK Stack Docker Setup
 
-This project provides a Docker-based setup for running Kibana with Elasticsearch.
+This project provides a Docker-based setup for running the complete ELK stack (Elasticsearch, Logstash, and Kibana).
 
 ## Prerequisites
 
@@ -32,20 +32,32 @@ This project provides a Docker-based setup for running Kibana with Elasticsearch
 5. **Access Elasticsearch:**
    Elasticsearch is available at `http://localhost:9200` (or the port configured in ELASTICSEARCH_PORT)
 
+6. **Access Logstash:**
+   - Send logs to `http://localhost:5044` (Beats input)
+   - Monitor via HTTP API at `http://localhost:9600`
+
 ## Services
 
 ### Elasticsearch
 - **Port:** 9200 (HTTP), 9300 (Transport)
 - **Container:** elasticsearch
 - **Data:** Persisted in Docker volume `elasticsearch_data`
-- **Network:** Internal `elastic` network only (secure)
+- **Network:** Internal `elk_network` network only (secure)
+
+### Logstash
+- **Port:** 5044 (Beats input), 9600 (HTTP API)
+- **Container:** logstash
+- **Configuration:** Uses `logstash.conf` for pipeline configuration
+- **Data:** Persisted in Docker volume `logstash_data`
+- **Network:** Internal `elk_network` network (to communicate with Elasticsearch)
+- **Dependencies:** Waits for Elasticsearch to be healthy before starting
 
 ### Kibana
 - **Port:** 5601
 - **Container:** kibana
 - **Dependencies:** Waits for Elasticsearch to be healthy before starting
 - **Networks:** 
-  - Internal `elastic` network (to communicate with Elasticsearch)
+  - Internal `elk_network` network (to communicate with Elasticsearch)
   - External `https_network` network (for reverse proxy access)
 
 ## Configuration
@@ -63,10 +75,14 @@ Available settings:
 - **KIBANA_PORT**: External port for Kibana (default: 5601)
 - **ELASTICSEARCH_PORT**: External port for Elasticsearch HTTP (default: 9200)
 - **ELASTICSEARCH_TRANSPORT_PORT**: External port for Elasticsearch transport (default: 9300)
+- **LOGSTASH_BEATS_PORT**: External port for Logstash Beats input (default: 5044)
+- **LOGSTASH_HTTP_PORT**: External port for Logstash HTTP API (default: 9600)
 - **ELASTICSEARCH_VERSION**: Elasticsearch Docker image version (default: 8.11.0)
 - **KIBANA_VERSION**: Kibana Docker image version (default: 8.11.0)
+- **LOGSTASH_VERSION**: Logstash Docker image version (default: 8.11.0)
 - **XPACK_SECURITY_ENABLED**: Enable/disable security features (default: false)
-- **ELK_NETWORK**: Internal network name for Elasticsearch-Kibana communication (default: elk_network)
+- **XPACK_MONITORING_ENABLED**: Enable/disable monitoring features (default: false)
+- **ELK_NETWORK**: Internal network name for ELK stack communication (default: elk_network)
 - **HTTPS_NETWORK**: External network name for reverse proxy access (default: https_network)
 
 To change the external ports, edit the `.env` file:
@@ -87,15 +103,16 @@ ELASTICSEARCH_PORT=9300
 
 This setup uses a dual-network architecture for security:
 
-- **Internal Network (`elastic`)**: Used for Elasticsearch-Kibana communication only
+- **Internal Network (`elk_network`)**: Used for ELK stack communication (Elasticsearch, Logstash, Kibana)
 - **External Network (`https_network`)**: Allows reverse proxy access to Kibana
 
 ### Using with Reverse Proxy
 
 To connect Kibana to a reverse proxy (like Nginx, Traefik, or Apache):
 
-1. Create the external network:
+1. Create the external networks:
    ```bash
+   docker network create elk_network
    docker network create https_network
    ```
 
@@ -110,7 +127,8 @@ To connect Kibana to a reverse proxy (like Nginx, Traefik, or Apache):
 ## Commands
 
 ```bash
-# Create external network (run once)
+# Create external networks (run once)
+docker network create elk_network
 docker network create https_network
 
 # Start services
@@ -134,7 +152,8 @@ docker-compose ps
 # Restart services after changing .env file
 docker-compose down && docker-compose up -d
 
-# Remove external network (when no longer needed)
+# Remove external networks (when no longer needed)
+docker network rm elk_network
 docker network rm https_network
 ```
 
