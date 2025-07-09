@@ -3,11 +3,11 @@ server.host: "0.0.0.0"
 elasticsearch.hosts: ["http://elasticsearch:9200"]
 monitoring.ui.container.elasticsearch.enabled: true
 
-# Disable security for development
-xpack.security.enabled: false
-xpack.encryptedSavedObjects.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
-xpack.reporting.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
-xpack.security.encryptionKey: "fhjskloppd678ehkdfdlliverpoolfcr"
+# Security configuration
+xpack.security.enabled: ${XPACK_SECURITY_ENABLED}
+xpack.encryptedSavedObjects.encryptionKey: "${KIBANA_ENCRYPTION_KEY}"
+xpack.reporting.encryptionKey: "${KIBANA_REPORTING_KEY}"
+xpack.security.encryptionKey: "${KIBANA_SECURITY_KEY}"
 
 # Logging
 logging.appenders.console.type: console

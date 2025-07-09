@@ -85,6 +85,9 @@ Available settings:
 - **LOGSTASH_VERSION**: Logstash Docker image version (default: 8.11.0)
 - **XPACK_SECURITY_ENABLED**: Enable/disable security features (default: false)
 - **XPACK_MONITORING_ENABLED**: Enable/disable monitoring features (default: false)
+- **KIBANA_ENCRYPTION_KEY**: Encryption key for saved objects (MUST change for production)
+- **KIBANA_REPORTING_KEY**: Encryption key for reporting (MUST change for production)
+- **KIBANA_SECURITY_KEY**: Encryption key for security (MUST change for production)
 - **ELK_NETWORK**: Internal network name for ELK stack communication (default: elk_network)
 - **HTTPS_NETWORK**: External network name for reverse proxy access (default: https_network)
 
@@ -179,9 +182,38 @@ To modify Kibana configuration:
 - **Out of memory:** Increase Docker memory limit or adjust ES_JAVA_OPTS in docker-compose.yml
 - **Permission issues:** Ensure Docker daemon is running and user has permissions
 
-## Security Note
+## Security Configuration
 
-This setup has security disabled for development purposes. Do not use in production without enabling and configuring security features.
+### For Development
+This setup has security disabled by default (`XPACK_SECURITY_ENABLED=false`) for development purposes.
+
+### For Production
+**CRITICAL**: Before deploying to production, you MUST:
+
+1. **Generate secure encryption keys:**
+   ```bash
+   # Generate three unique keys (run this command 3 times)
+   openssl rand -base64 32
+   ```
+
+2. **Update your .env file with the generated keys:**
+   ```bash
+   KIBANA_ENCRYPTION_KEY=your_generated_key_1
+   KIBANA_REPORTING_KEY=your_generated_key_2
+   KIBANA_SECURITY_KEY=your_generated_key_3
+   ```
+
+3. **Enable security features:**
+   ```bash
+   XPACK_SECURITY_ENABLED=true
+   ```
+
+4. **Use strong passwords:**
+   ```bash
+   KIBANA_SYSTEM_PASSWORD=your_very_strong_password
+   ```
+
+⚠️ **Never use the default/example encryption keys in production!** These keys protect sensitive data and must be unique for each environment.
 
 ## Files Overview
 
