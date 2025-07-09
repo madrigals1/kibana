@@ -34,6 +34,7 @@ This project provides a Docker-based setup for running the complete ELK stack (E
 
 6. **Access Logstash:**
    - Send logs to `http://localhost:5044` (Beats input)
+   - Send JSON logs to `http://localhost:5055` (TCP input)
    - Monitor via HTTP API at `http://localhost:9600`
 
 ## Services
@@ -45,7 +46,7 @@ This project provides a Docker-based setup for running the complete ELK stack (E
 - **Network:** Internal `elk_network` network only (secure)
 
 ### Logstash
-- **Port:** 5044 (Beats input), 9600 (HTTP API)
+- **Ports:** 5044 (Beats input), 5055 (TCP input), 9600 (HTTP API)
 - **Container:** logstash
 - **Configuration:** Uses `logstash.conf` for pipeline configuration
 - **Data:** Persisted in Docker volume `logstash_data`
@@ -76,6 +77,8 @@ Available settings:
 - **ELASTICSEARCH_PORT**: External port for Elasticsearch HTTP (default: 9200)
 - **ELASTICSEARCH_TRANSPORT_PORT**: External port for Elasticsearch transport (default: 9300)
 - **LOGSTASH_BEATS_PORT**: External port for Logstash Beats input (default: 5044)
+- **LOGSTASH_TCP_PORT**: External port for Logstash TCP input (default: 5055)
+- **LOGSTASH_TCP_TAGS**: Tags to apply to TCP input logs (default: tcp-logs)
 - **LOGSTASH_HTTP_PORT**: External port for Logstash HTTP API (default: 9600)
 - **ELASTICSEARCH_VERSION**: Elasticsearch Docker image version (default: 8.11.0)
 - **KIBANA_VERSION**: Kibana Docker image version (default: 8.11.0)
