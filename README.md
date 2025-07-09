@@ -78,7 +78,6 @@ Available settings:
 - **ELASTICSEARCH_TRANSPORT_PORT**: External port for Elasticsearch transport (default: 9300)
 - **LOGSTASH_BEATS_PORT**: External port for Logstash Beats input (default: 5044)
 - **LOGSTASH_TCP_PORT**: External port for Logstash TCP input (default: 5055)
-- **LOGSTASH_TCP_TAGS**: Tags to apply to TCP input logs (default: tcp-logs)
 - **LOGSTASH_HTTP_PORT**: External port for Logstash HTTP API (default: 9600)
 - **ELASTICSEARCH_VERSION**: Elasticsearch Docker image version (default: 8.11.0)
 - **KIBANA_VERSION**: Kibana Docker image version (default: 8.11.0)

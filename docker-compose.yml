@@ -26,7 +26,6 @@ services:
     environment:
       - LS_JAVA_OPTS=${LS_JAVA_OPTS}
       - XPACK_MONITORING_ENABLED=${XPACK_MONITORING_ENABLED}
-      - LOGSTASH_TCP_TAGS=${LOGSTASH_TCP_TAGS}
     ports:
       - "${LOGSTASH_BEATS_PORT}:5044"
       - "${LOGSTASH_TCP_PORT}:5055"
