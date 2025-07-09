@@ -13,7 +13,7 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      - elk_network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
       interval: 30s
@@ -32,7 +32,7 @@ services:
       elasticsearch:
         condition: service_healthy
     networks:
-      - elastic
+      - elk_network
       - https_network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:5601 || exit 1"]
@@ -45,8 +45,9 @@ volumes:
     driver: local
 
 networks:
-  elastic:
-    driver: bridge
+  elk_network:
+    external: true
+    name: ${ELK_NETWORK}
   https_network:
     external: true
     name: ${HTTPS_NETWORK} 

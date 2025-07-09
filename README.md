@@ -66,7 +66,7 @@ Available settings:
 - **ELASTICSEARCH_VERSION**: Elasticsearch Docker image version (default: 8.11.0)
 - **KIBANA_VERSION**: Kibana Docker image version (default: 8.11.0)
 - **XPACK_SECURITY_ENABLED**: Enable/disable security features (default: false)
-- **ELASTIC_NETWORK**: Internal network name for Elasticsearch-Kibana communication (default: elastic)
+- **ELK_NETWORK**: Internal network name for Elasticsearch-Kibana communication (default: elk_network)
 - **HTTPS_NETWORK**: External network name for reverse proxy access (default: https_network)
 
 To change the external ports, edit the `.env` file:
